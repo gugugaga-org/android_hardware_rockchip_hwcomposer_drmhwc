@@ -486,10 +486,26 @@ endif #phone
 endif #box
 endif #tablet
 
+# The static-screen optimization switches an idle display from VOP overlay
+# composition to a full-screen GLES framebuffer.  It is not usable on the
+# TPM312 RK3399 display path: after the switch the HDMI output can become
+# corrupted, and a normal frame only recovers it until the timer fires again.
+# Keep the legacy behavior for other products, but disable it for TPM312.
 ifeq ($(strip $(TARGET_BOARD_PLATFORM)),rk3126c)
+RK_INVALID_REFRESH = 0
+else ifeq ($(strip $(TARGET_PRODUCT)),rk3399_tpm312)
 RK_INVALID_REFRESH = 0
 else
 RK_INVALID_REFRESH = 1
+endif
+
+# The RK3399 TPM312 VOP path corrupts HDMI when a translucent full-screen
+# dim layer is composed as a hardware plane.  Make this product use GLES for
+# such layers; other products retain the legacy behavior below.
+ifeq ($(strip $(TARGET_PRODUCT)),rk3399_tpm312)
+RK_TPM312_ALPHA_GLES_FALLBACK = 1
+else
+RK_TPM312_ALPHA_GLES_FALLBACK = 0
 endif
 
 ifeq ($(TARGET_USES_HWC2),true)
@@ -514,7 +530,9 @@ LOCAL_CPPFLAGS += -DUSE_DRM_GENERIC_IMPORTER \
                -DUSE_MULTI_AREAS=1 -DRK_RGA_PREPARE_ASYNC=1 -DRK_RGA_COMPSITE_SYNC=0 \
 	       -DUSE_AFBC_LAYER=$(USE_AFBC_LAYER) -DRK_SKIP_SUB=1 \
 	       -DRK_VIDEO_UI_OPT=1 -DRK_VIDEO_SKIP_LINE=1 \
-	       -DRK_INVALID_REFRESH=$(RK_INVALID_REFRESH) -DRK_HDR_PERF_MODE=0 \
+	       -DRK_INVALID_REFRESH=$(RK_INVALID_REFRESH) \
+	       -DRK_TPM312_ALPHA_GLES_FALLBACK=$(RK_TPM312_ALPHA_GLES_FALLBACK) \
+	       -DRK_HDR_PERF_MODE=0 \
                -DRK_3D_VIDEO=$(RK_3D_VIDEO) -DRK_PRINT_LAYER_NAME=$(RK_PRINT_LAYER_NAME) \
 	       -DRK_SORT_AREA_BY_XPOS=$(RK_SORT_AREA_BY_XPOS) -DRK_HOR_INTERSECT_LIMIT=$(RK_HOR_INTERSECT_LIMIT) \
 	       -DRK_RGA_SCALE_AND_ROTATE=$(RK_RGA_SCALE_AND_ROTATE) \

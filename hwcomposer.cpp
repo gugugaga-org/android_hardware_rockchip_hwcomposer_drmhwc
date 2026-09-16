@@ -1854,10 +1854,10 @@ static bool is_use_gles_comp(struct hwc_context_t *ctx, DrmConnector *connector,
                 return true;
             }
         }
-#if 0
+#if RK_TPM312_ALPHA_GLES_FALLBACK
         if( (layer->blending == HWC_BLENDING_PREMULT)&& layer->planeAlpha!=0xFF )
         {
-            ALOGD_IF(log_level(DBG_DEBUG),"layer's blending planeAlpha=0x%x,go to GPU GLES at line=%d", layer->planeAlpha, __LINE__);
+            ALOGD_IF(log_level(DBG_DEBUG),"translucent layer planeAlpha=0x%x,go to GPU GLES at line=%d", layer->planeAlpha, __LINE__);
             return true;
         }
 #endif
