@@ -44,6 +44,11 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+// Android 13's libdrm headers omit Rockchip's kernel-private NV12_10 code.
+#ifndef DRM_FORMAT_NV12_10
+#define DRM_FORMAT_NV12_10 fourcc_code('N', 'A', '1', '2')
+#endif
+
 #ifdef ANDROID_P
 #include <log/log.h>
 #else

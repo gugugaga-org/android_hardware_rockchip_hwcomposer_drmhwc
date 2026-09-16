@@ -151,7 +151,7 @@ ifneq (1,$(strip $(shell expr $(PLATFORM_SDK_VERSION) \< 28)))
 LOCAL_CFLAGS += -DANDROID_P
 
 LOCAL_SHARED_LIBRARIES +=  \
-	libsync_vendor
+	libsync
 
 LOCAL_C_INCLUDES += \
 	system/core \
